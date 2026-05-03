@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "npm run dev",
-    "build": "npm run lint && tsc && vite build",
+    "start": "pnpm run dev",
+    "build": "pnpm run lint && tsc && vite build",
     "lint": "eslint .",
     "dev": "vite",
     "deploy": "pnpm run build && wrangler deploy",
