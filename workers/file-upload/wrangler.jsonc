@@ -15,12 +15,20 @@
 		"nodejs_compat"
 	],
 	"vars": {
-		"ACCOUNT_ID": "ac99aaeadcc8ba25f8e14d85b692db13"
+		"ACCOUNT_ID": "ac99aaeadcc8ba25f8e14d85b692db13",
+		"BUCKET_PUBLIC_URL": "https://public.titta.rehn.app"
 	},
 	"r2_buckets": [
 		{
 			"binding": "FILE_BUCKET",
 			"bucket_name": "titta-uploads"
 		}
-	]
+	],
+	"routes": [
+		{
+			"pattern": "file-upload.titta.rehn.app",
+			"custom_domain": true,
+		},
+	],
+	"workers_dev": true
 }

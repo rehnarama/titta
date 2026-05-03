@@ -1,12 +1,5 @@
 import { AwsClient } from 'aws4fetch';
 
-interface Env {
-	FILE_BUCKET: R2Bucket;
-	R2_ACCESS_KEY_ID: string;
-	R2_SECRET_ACCESS_KEY: string;
-	ACCOUNT_ID: string;
-}
-
 const BUCKET_NAME = 'titta-uploads';
 
 const CORS_HEADERS = {
@@ -54,7 +47,7 @@ async function handlePresign(request: Request, env: Env): Promise<Response> {
 		aws: { signQuery: true },
 	});
 
-	return jsonResponse({ url: signed.url, key, expiresIn }, 200);
+	return jsonResponse({ url: signed.url, key: `images/${key}`, bucketUrl: env.BUCKET_PUBLIC_URL, expiresIn }, 200);
 }
 
 function jsonResponse(body: unknown, status: number): Response {

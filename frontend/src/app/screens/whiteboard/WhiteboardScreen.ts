@@ -30,6 +30,7 @@ import {
   WidgetData,
 } from "./WhiteboardData";
 import { engine } from "../../getEngine";
+import { uploadFile } from "../../utils/FileUpload";
 
 // Register widget types on module load
 registerPostItWidget();
@@ -105,6 +106,11 @@ export class WhiteboardScreen extends Container {
       if (this.selectionSystem.count > 0) {
         this.removeSelectedWidgets();
       }
+    });
+    this.keyboard.on("PasteImage", (file) => {
+      uploadFile(file).then((url) => {
+        this.createWidget("image", { props: { src: url } });
+      });
     });
 
     // HMR: rebuild widget visuals when their type is re-registered
@@ -207,10 +213,19 @@ export class WhiteboardScreen extends Container {
   }
 
   // ── Widget management ───────────────────────────────────────
-  private createWidget(type: string): void {
+
+  private createWidget(
+    type: string,
+    overrides: Partial<WidgetData> = {},
+  ): void {
     const center = this.canvas.toWorld(this._width / 2, this._height / 2);
 
-    const widgetData = createWidgetDataOfType(type, center.x, center.y);
+    const widgetData = createWidgetDataOfType(
+      type,
+      center.x,
+      center.y,
+      overrides,
+    );
 
     this.docHandle.change((doc) => {
       doc.widgets[widgetData.id] = widgetData;
