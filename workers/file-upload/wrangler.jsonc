@@ -1,0 +1,26 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "file-upload",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-05-03",
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"vars": {
+		"ACCOUNT_ID": "ac99aaeadcc8ba25f8e14d85b692db13"
+	},
+	"r2_buckets": [
+		{
+			"binding": "FILE_BUCKET",
+			"bucket_name": "titta-uploads"
+		}
+	]
+}
