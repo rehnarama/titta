@@ -6,6 +6,7 @@ import {
   Shader,
   UniformGroup,
   Color,
+  Renderer,
 } from "pixi.js";
 
 import gridWgsl from "./grid.wgsl?raw";
@@ -21,7 +22,7 @@ const SUBDIVISIONS = 4;
 export class GridBackground extends Mesh<MeshGeometry, Shader> {
   private gridUniforms: UniformGroup;
 
-  constructor() {
+  constructor(renderer: Renderer) {
     const geometry = new MeshGeometry({
       positions: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
       uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
@@ -64,11 +65,13 @@ export class GridBackground extends Mesh<MeshGeometry, Shader> {
       },
     });
 
+    console.log(renderer.globalUniforms.uniformGroup);
     const shader = new Shader({
       gpuProgram,
       glProgram,
       resources: {
-        localUniforms: gridUniforms,
+        globalUniforms: renderer.globalUniforms.uniformGroup,
+        gridUniforms,
       },
     });
 

@@ -101,8 +101,8 @@ export class WhiteboardScreen extends Container {
 
     // Keyboard actions
     this.keyboard = new KeyboardSystem();
-    this.keyboard.on("action", (action) => {
-      if (action === "delete" && this.selectionSystem.count > 0) {
+    this.keyboard.on("Delete", () => {
+      if (this.selectionSystem.count > 0) {
         this.removeSelectedWidgets();
       }
     });

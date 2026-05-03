@@ -22,7 +22,7 @@ export class WhiteboardCanvas extends Container {
     "zoom-changed": (zoom: number) => void;
   }>();
   readonly worldContainer = new Container();
-  private readonly bg = new GridBackground();
+  private readonly bg: GridBackground;
   private isPanning = false;
   private lastPanX = 0;
   private lastPanY = 0;
@@ -32,6 +32,7 @@ export class WhiteboardCanvas extends Container {
     super();
 
     // Background fills the viewport and catches pointer events for panning
+    this.bg = new GridBackground(app.renderer);
     this.addChild(this.bg);
 
     // World container holds all widgets and transforms with pan/zoom

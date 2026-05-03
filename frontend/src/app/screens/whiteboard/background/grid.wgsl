@@ -5,7 +5,7 @@ struct GlobalUniforms {
     uResolution: vec2<f32>,
 };
 
-struct LocalUniforms {
+struct GridUniforms {
     uWorldOffset: vec2<f32>,
     uZoom: f32,
     uScreenSize: vec2<f32>,
@@ -16,7 +16,7 @@ struct LocalUniforms {
 };
 
 @group(0) @binding(0) var<uniform> globalUniforms: GlobalUniforms;
-@group(1) @binding(0) var<uniform> localUniforms: LocalUniforms;
+@group(1) @binding(0) var<uniform> gridUniforms: GridUniforms;
 
 struct VertexInput {
     @location(0) aPosition: vec2<f32>,
@@ -31,8 +31,9 @@ struct VertexOutput {
 fn mainVertex(input: VertexInput) -> VertexOutput {
     let worldTransformMatrix = globalUniforms.uWorldTransformMatrix;
     let projectionMatrix = globalUniforms.uProjectionMatrix;
+    let resolution = globalUniforms.uResolution;
 
-    let worldPosition = worldTransformMatrix * vec3<f32>(input.aPosition, 1.0);
+    let worldPosition = worldTransformMatrix * vec3<f32>(input.aPosition * resolution, 1.0);
     let clipPosition = projectionMatrix * worldPosition;
 
     var output: VertexOutput;
@@ -52,36 +53,36 @@ fn gridLine(coord: f32, lineWidth: f32) -> f32 {
 @fragment
 fn mainFragment(input: VertexOutput) -> @location(0) vec4<f32> {
     let screenPos = input.vScreenPos;
-    let worldPos = (screenPos - localUniforms.uWorldOffset) / localUniforms.uZoom;
+    let worldPos = (screenPos - gridUniforms.uWorldOffset) / gridUniforms.uZoom;
 
-    let logBase = log2(localUniforms.uSubdivisions);
-    let logZoom = log2(localUniforms.uZoom);
+    let logBase = log2(gridUniforms.uSubdivisions);
+    let logZoom = log2(gridUniforms.uZoom);
     let level = floor(logZoom / logBase);
     let t = fract(logZoom / logBase);
 
-    let majorSpacing = localUniforms.uGridSize / pow(localUniforms.uSubdivisions, level);
-    let minorSpacing = majorSpacing / localUniforms.uSubdivisions;
+    let majorSpacing = gridUniforms.uGridSize / pow(gridUniforms.uSubdivisions, level);
+    let minorSpacing = majorSpacing / gridUniforms.uSubdivisions;
 
     // Distance to nearest major grid line (in world space)
     let majorCoordX = worldPos.x - round(worldPos.x / majorSpacing) * majorSpacing;
     let majorCoordY = worldPos.y - round(worldPos.y / majorSpacing) * majorSpacing;
     // Convert to screen space for consistent line width
-    let majorScreenX = majorCoordX * localUniforms.uZoom;
-    let majorScreenY = majorCoordY * localUniforms.uZoom;
+    let majorScreenX = majorCoordX * gridUniforms.uZoom;
+    let majorScreenY = majorCoordY * gridUniforms.uZoom;
     let majorLine = max(gridLine(majorScreenX, 1.0), gridLine(majorScreenY, 1.0));
 
     // Distance to nearest minor grid line (in world space)
     let minorCoordX = worldPos.x - round(worldPos.x / minorSpacing) * minorSpacing;
     let minorCoordY = worldPos.y - round(worldPos.y / minorSpacing) * minorSpacing;
-    let minorScreenX = minorCoordX * localUniforms.uZoom;
-    let minorScreenY = minorCoordY * localUniforms.uZoom;
+    let minorScreenX = minorCoordX * gridUniforms.uZoom;
+    let minorScreenY = minorCoordY * gridUniforms.uZoom;
     let minorLine = max(gridLine(minorScreenX, 1.0), gridLine(minorScreenY, 1.0));
 
-    let majorAlpha = localUniforms.uLineColor.a;
-    let minorAlpha = localUniforms.uLineColor.a * t;
+    let majorAlpha = gridUniforms.uLineColor.a;
+    let minorAlpha = gridUniforms.uLineColor.a * t;
 
     let lineAlpha = max(majorLine * majorAlpha, minorLine * minorAlpha);
-    let color = mix(localUniforms.uBgColor, vec4<f32>(localUniforms.uLineColor.rgb, 1.0), lineAlpha);
+    let color = mix(gridUniforms.uBgColor, vec4<f32>(gridUniforms.uLineColor.rgb, 1.0), lineAlpha);
 
-    return vec4<f32>(1.0, 0.0, 0.0, 1.0); //color;
+    return color;
 }

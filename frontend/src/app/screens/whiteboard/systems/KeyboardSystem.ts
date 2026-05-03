@@ -1,10 +1,11 @@
 import { EventEmitter } from "pixi.js";
 
-type KeyboardAction = "delete";
+interface KeyboardEvents {
+  Delete: () => void;
+  PasteImage: (file: File) => void;
+}
 
-export class KeyboardSystem extends EventEmitter<{
-  action: [KeyboardAction];
-}> {
+export class KeyboardSystem extends EventEmitter<KeyboardEvents> {
   private handleKeyDown = (e: KeyboardEvent): void => {
     // Ignore when the user is typing in an input or textarea (e.g. PostIt edit)
     const tag = (document.activeElement as HTMLElement)?.tagName;
@@ -12,17 +13,28 @@ export class KeyboardSystem extends EventEmitter<{
 
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
-      this.emit("action", "delete");
+      this.emit("Delete");
+    }
+  };
+
+  private handlePaste = (e: ClipboardEvent) => {
+    const files = e.clipboardData?.files;
+    if (files) {
+      for (const file of files) {
+        this.emit("PasteImage", file);
+      }
     }
   };
 
   constructor() {
     super();
     window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("paste", this.handlePaste);
   }
 
   dispose(): void {
     window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("paste", this.handlePaste);
     this.removeAllListeners();
   }
 }

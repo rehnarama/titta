@@ -54,5 +54,5 @@ void main()
     float lineAlpha = max(majorLine * majorAlpha, minorLine * minorAlpha);
     vec4 color = mix(uBgColor, vec4(uLineColor.rgb, 1.0), lineAlpha);
 
-    fragColor = vec4(1.0, 0.0, 0.0, 1.0); //color;
+    fragColor = color;
 }
