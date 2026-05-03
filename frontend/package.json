@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "pnpm run dev",
-    "build": "pnpm run lint && tsc && vite build",
+    "build": "vite build && pnpm run lint && tsc",
     "lint": "eslint .",
     "dev": "vite",
     "deploy": "pnpm run build && wrangler deploy",
