@@ -13,7 +13,6 @@ export class ImageWidget extends Widget<ImageProps> {
 
     const bg = new Graphics();
     bg.label = "bg";
-    drawImageBg(bg, data.position.width, data.position.height);
     container.addChild(bg);
 
     const sprite = new Sprite();
@@ -24,6 +23,7 @@ export class ImageWidget extends Widget<ImageProps> {
     if (props.src) {
       loadImage(sprite, props.src, data.position.width, data.position.height);
     } else {
+      drawImageBg(bg, data.position.width, data.position.height);
       drawPlaceholder(bg, data.position.width, data.position.height);
     }
 
@@ -33,11 +33,9 @@ export class ImageWidget extends Widget<ImageProps> {
   updateContent(content: Container, data: WidgetData<ImageProps>): void {
     const bg = content.getChildByLabel("bg") as Graphics;
     const props = data.props;
-    if (bg) {
+    if (bg && !props.src) {
       drawImageBg(bg, data.position.width, data.position.height);
-      if (!props.src) {
-        drawPlaceholder(bg, data.position.width, data.position.height);
-      }
+      drawPlaceholder(bg, data.position.width, data.position.height);
     }
 
     const sprite = content.getChildByLabel("image") as Sprite;
